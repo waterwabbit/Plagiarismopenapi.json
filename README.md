@@ -1,0 +1,1 @@
+# Plagiarismopenapi.json
