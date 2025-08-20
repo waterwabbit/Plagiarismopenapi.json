@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kid Show Randomizer</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; }
+    h1 { color: #333; }
+    label, input { font-size: 1rem; }
+    input[type="number"] { width: 4rem; }
+    button { margin-left: 1rem; padding: 0.4rem 0.8rem; }
+    #result { margin-top: 2rem; padding: 1rem; border: 1px solid #ccc; border-radius: 4px; }
+    .heading { font-weight: bold; margin-bottom: 0.5rem; }
+  </style>
+</head>
+<body>
+  <h1>Kid Show Randomizer</h1>
+  <p>Enter an age between 4 and 13 and click "Randomize" to get a recommended movie or series from Netflix or Apple TV+.</p>
+  <form id="randomizerForm">
+    <label for="age">Age:</label>
+    <input type="number" id="age" name="age" min="4" max="13" required />
+    <button type="submit">Randomize</button>
+  </form>
+  <div id="result" style="display:none;"></div>
+
+  <script>
+    const catalogue = [
+      { title: "Puppy Place", platform: "Apple TV+", type: "Series", category: "Animal/Pets", minAge: 6, maxAge: 12 },
+      { title: "The Snoopy Show", platform: "Apple TV+", type: "Series", category: "Comedy/Adventure", minAge: 4, maxAge: 10 },
+      { title: "Hello, Jack! The Kindness Show", platform: "Apple TV+", type: "Series", category: "Educational/Kindness", minAge: 4, maxAge: 8 },
+      { title: "Stillwater", platform: "Apple TV+", type: "Series", category: "Mindfulness", minAge: 5, maxAge: 9 },
+      { title: "Ghostwriter", platform: "Apple TV+", type: "Series", category: "Mystery/Literature", minAge: 6, maxAge: 11 },
+      { title: "Doug Unplugs", platform: "Apple TV+", type: "Series", category: "Robot/Adventure", minAge: 4, maxAge: 7 },
+      { title: "Shape Island", platform: "Apple TV+", type: "Series", category: "Friendship/Shapes", minAge: 4, maxAge: 8 },
+      { title: "Harriet the Spy", platform: "Apple TV+", type: "Series", category: "Mystery/Adventure", minAge: 6, maxAge: 10 },
+      { title: "Fraggle Rock: Rock On!", platform: "Apple TV+", type: "Series", category: "Music/Fantasy", minAge: 5, maxAge: 10 },
+      { title: "El Deafo", platform: "Apple TV+", type: "Series", category: "Superhero/Drama", minAge: 7, maxAge: 12 },
+      { title: "Lovely Little Farm", platform: "Apple TV+", type: "Series", category: "Farm/Family", minAge: 4, maxAge: 9 },
+      { title: "WondLa", platform: "Apple TV+", type: "Series", category: "Science Fiction", minAge: 8, maxAge: 13 },
+      { title: "Not a Box", platform: "Apple TV+", type: "Series", category: "Creative Play", minAge: 4, maxAge: 7 },
+      { title: "Wolfwalkers", platform: "Apple TV+", type: "Movie", category: "Fantasy/Adventure", minAge: 8, maxAge: 12 },
+      { title: "Luck", platform: "Apple TV+", type: "Movie", category: "Fantasy/Comedy", minAge: 5, maxAge: 12 },
+      { title: "A Summer Musical", platform: "Apple TV+", type: "Movie", category: "Musical/Adventure", minAge: 5, maxAge: 10 },
+      { title: "Lulu is a Rhinoceros", platform: "Apple TV+", type: "Movie", category: "Animal/Identity", minAge: 4, maxAge: 8 },
+      { title: "Sing 2", platform: "Netflix", type: "Movie", category: "Musical/Comedy", minAge: 7, maxAge: 13 },
+      { title: "Minions: The Rise of Gru", platform: "Netflix", type: "Movie", category: "Comedy/Adventure", minAge: 6, maxAge: 12 },
+      { title: "The Grinch", platform: "Netflix", type: "Movie", category: "Holiday/Comedy", minAge: 6, maxAge: 10 },
+      { title: "Despicable Me 3", platform: "Netflix", type: "Movie", category: "Comedy/Adventure", minAge: 6, maxAge: 12 },
+      { title: "Minions", platform: "Netflix", type: "Movie", category: "Comedy/Adventure", minAge: 6, maxAge: 12 },
+      { title: "The Boss Baby", platform: "Netflix", type: "Movie", category: "Comedy/Family", minAge: 5, maxAge: 11 },
+      { title: "Ferdinand", platform: "Netflix", type: "Movie", category: "Adventure/Comedy", minAge: 6, maxAge: 11 },
+      { title: "The Super Mario Bros. Movie", platform: "Netflix", type: "Movie", category: "Adventure/Fantasy", minAge: 7, maxAge: 13 },
+      { title: "PAW Patrol: The Movie", platform: "Netflix", type: "Movie", category: "Action/Family", minAge: 4, maxAge: 8 },
+      { title: "Leo", platform: "Netflix", type: "Movie", category: "Comedy/Coming‑of‑Age", minAge: 8, maxAge: 13 },
+      { title: "The Bad Guys", platform: "Netflix", type: "Movie", category: "Heist/Comedy", minAge: 7, maxAge: 13 },
+      { title: "Despicable Me 2", platform: "Netflix", type: "Movie", category: "Comedy/Adventure", minAge: 6, maxAge: 12 },
+      { title: "Shrek", platform: "Netflix", type: "Movie", category: "Fantasy/Comedy", minAge: 8, maxAge: 13 },
+      { title: "Thelma the Unicorn", platform: "Netflix", type: "Movie", category: "Musical/Fantasy", minAge: 6, maxAge: 12 },
+      { title: "Orion and the Dark", platform: "Netflix", type: "Movie", category: "Adventure/Fantasy", minAge: 7, maxAge: 13 },
+      { title: "Hotel Transylvania 3", platform: "Netflix", type: "Movie", category: "Comedy/Fantasy", minAge: 7, maxAge: 13 },
+      { title: "Puss in Boots: The Last Wish", platform: "Netflix", type: "Movie", category: "Adventure/Fantasy", minAge: 8, maxAge: 13 },
+      { title: "Paddington in Peru", platform: "Netflix", type: "Movie", category: "Adventure/Family", minAge: 4, maxAge: 12 },
+      { title: "The Wild Robot", platform: "Netflix", type: "Movie", category: "Adventure/Science Fiction", minAge: 6, maxAge: 12 },
+      { title: "KPop Demon Hunters", platform: "Netflix", type: "Movie", category: "Music/Fantasy", minAge: 7, maxAge: 13 },
+      { title: "Peppa Pig", platform: "Netflix", type: "Series", category: "Preschool", minAge: 4, maxAge: 7 },
+      { title: "Gabby's Dollhouse", platform: "Netflix", type: "Series", category: "Crafts/Fantasy", minAge: 4, maxAge: 8 },
+      { title: "CoComelon Lane", platform: "Netflix", type: "Series", category: "Songs/Preschool", minAge: 4, maxAge: 5 },
+      { title: "PAW Patrol", platform: "Netflix", type: "Series", category: "Action/Rescue", minAge: 4, maxAge: 6 },
+      { title: "Masha and the Bear", platform: "Netflix", type: "Series", category: "Friendship/Comedy", minAge: 4, maxAge: 8 },
+      { title: "Hot Wheels: Let's Race", platform: "Netflix", type: "Series", category: "Racing/Adventure", minAge: 5, maxAge: 10 },
+      { title: "Unicorn Academy", platform: "Netflix", type: "Series", category: "Fantasy/School", minAge: 6, maxAge: 12 },
+      { title: "Sonic Prime", platform: "Netflix", type: "Series", category: "Adventure/Action", minAge: 7, maxAge: 13 },
+      { title: "The Smurfs", platform: "Netflix", type: "Series", category: "Adventure/Fantasy", minAge: 6, maxAge: 12 },
+      { title: "Jurassic World: Chaos Theory", platform: "Netflix", type: "Series", category: "Adventure/Dinosaurs", minAge: 7, maxAge: 13 },
+      { title: "Geek Girl", platform: "Netflix", type: "Series", category: "Drama/Comedy", minAge: 9, maxAge: 13 },
+      { title: "The Creature Cases", platform: "Netflix", type: "Series", category: "Mystery/Animals", minAge: 6, maxAge: 10 },
+      { title: "Bad Dinosaurs", platform: "Netflix", type: "Series", category: "Dinosaurs/Adventure", minAge: 5, maxAge: 9 },
+      { title: "Mermaid Magic", platform: "Netflix", type: "Series", category: "Fantasy/Adventure", minAge: 6, maxAge: 12 },
+      { title: "Dragon Ball Daima", platform: "Netflix", type: "Series", category: "Action/Fantasy", minAge: 8, maxAge: 13 },
+      { title: "I Woke Up a Vampire", platform: "Netflix", type: "Series", category: "Supernatural/Comedy", minAge: 8, maxAge: 13 },
+      { title: "The Dragon Prince", platform: "Netflix", type: "Series", category: "Fantasy/Adventure", minAge: 8, maxAge: 13 },
+      { title: "The Fairly OddParents: A New Wish", platform: "Netflix", type: "Series", category: "Magic/Comedy", minAge: 6, maxAge: 11 },
+      { title: "Pokémon Horizons", platform: "Netflix", type: "Series", category: "Adventure/Action", minAge: 6, maxAge: 12 },
+      { title: "7 Bears", platform: "Netflix", type: "Series", category: "Fantasy/Adventure", minAge: 5, maxAge: 10 },
+      { title: "Barbie Mysteries: Beach Detectives", platform: "Netflix", type: "Series", category: "Mystery/Adventure", minAge: 4, maxAge: 10 },
+      { title: "Building the Band", platform: "Netflix", type: "Series", category: "Music/Competition", minAge: 8, maxAge: 13 },
+      { title: "Miraculous: Tales of Ladybug & Cat Noir", platform: "Netflix", type: "Series", category: "Superhero/Action", minAge: 7, maxAge: 12 }
+    ];
+    function getEligible(age) { return catalogue.filter(item => age >= item.minAge && age <= item.maxAge); }
+    function randomChoice(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    function pickRandomForAge(age) {
+      const eligible = getEligible(age);
+      if (!eligible.length) return null;
+      const platforms = [...new Set(eligible.map(item => item.platform))];
+      const platform = randomChoice(platforms);
+      const byPlatform = eligible.filter(item => item.platform === platform);
+      const types = [...new Set(byPlatform.map(item => item.type))];
+      const type = randomChoice(types);
+      const byType = byPlatform.filter(item => item.type === type);
+      const categories = [...new Set(byType.map(item => item.category))];
+      const category = randomChoice(categories);
+      const byCategory = byType.filter(item => item.category === category);
+      const titleItem = randomChoice(byCategory);
+      return { platform, type, category, ...titleItem };
+    }
+    document.getElementById('randomizerForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const age = parseInt(document.getElementById('age').value, 10);
+      const resultDiv = document.getElementById('result');
+      if (isNaN(age) || age < 4 || age > 13) {
+        resultDiv.style.display = 'block';
+        resultDiv.textContent = 'Please enter a valid age between 4 and 13.';
+        return;
+      }
+      const recommendation = pickRandomForAge(age);
+      if (!recommendation) {
+        resultDiv.style.display = 'block';
+        resultDiv.textContent = 'No suitable titles found for this age.';
+        return;
+      }
+      resultDiv.style.display = 'block';
+      resultDiv.innerHTML = `<div class="heading">Recommendation</div>
+        <p><strong>Platform:</strong> ${recommendation.platform}</p>
+        <p><strong>Type:</strong> ${recommendation.type}</p>
+        <p><strong>Category:</strong> ${recommendation.category}</p>
+        <p><strong>Title:</strong> ${recommendation.title}</p>
+        <p><strong>Recommended ages:</strong> ${recommendation.minAge}–${recommendation.maxAge}</p>`;
+    });
+  </script>
+</body>
+</html>
